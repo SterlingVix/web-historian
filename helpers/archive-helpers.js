@@ -1,5 +1,5 @@
-var fs = require('fs');
 var path = require('path');
+var fs = require('fs');
 var _ = require('underscore');
 
 /*
@@ -12,7 +12,9 @@ var _ = require('underscore');
 exports.paths = {
   'siteAssets' : path.join(__dirname, '../web/public'),
   'archivedSites' : path.join(__dirname, '../archives/sites'),
-  'list' : path.join(__dirname, '../archives/sites.txt')
+  'list' : path.join(__dirname, '../archives/sites.txt'),
+  'htmlFetcher' : path.join(__dirname, '../workers/htmlfetcher')
+//   'htmlFetcher' : path.join(__dirname, '../workers/htmlfetcher.js') // .js???
 };
 
 // Used for stubbing paths for jasmine tests, do not modify
@@ -26,16 +28,49 @@ exports.initialize = function(pathsObj){
 // modularize your code. Keep it clean!
 
 exports.readListOfUrls = function(){
+  var accumulator;
+  fs.readFile(exports.paths.list, function (err, data) {
+    if (err) {
+      throw err;
+    }
+    accumulator = data.toString(); // convert from <buffer> stream to 
+    accumulator = accumulator.split('\n');
+    console.log("accumulator = ", accumulator);
+    return accumulator;
+  }); // end fs.readFile
+  
+  console.log("accumulator = ", accumulator);
+  return accumulator;
 };
 
 exports.isUrlInList = function(){
+  // check /archives/sites.txt for matching URL
 };
 
-exports.addUrlToList = function(){
+exports.addUrlToList = function(fileLocation, stringToWrite, suppressNewline){ // var writeToFile = function(fileLocation, stringToWrite, suppressNewline) {
+  var stringOut = "";
+  var aTime = new Date(); // just useful to have around :)
+  if (!suppressNewline) { stringOut += "\n"; } // add newline if not suppressed
+  stringOut += stringToWrite
+
+  // http://nodejs.org/api/all.html#all_fs_appendfile_filename_data_options_callback
+  fs.appendFile(fileLocation, stringOut, function (err) { // fs.appendFile(filename, data, [options], callback)
+    if (err) throw err;
+  });
+
+// //   console.log("in addUrlToList");
+//   fs.appendFiles(exports.paths.list, url+ '\n', function(err, file)__dirnameif(cb){
+//     cb();
+//   });
+  // append URL to /archives/sites.txt
 };
 
 exports.isURLArchived = function(){
+  // check /archives/sites folder for matching file
 };
 
 exports.downloadUrls = function(){
+  // reach out on web and cache page
 };
+
+
